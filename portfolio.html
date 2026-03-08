@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Marshall Washington</title>
+  <link href="https://fonts.googleapis.com/css2?family=Micro+5&family=Metrophobic&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: white;
+      font-family: 'Metrophobic', sans-serif;
+      color: black;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #blob-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav, main { position: relative; z-index: 1; }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .nav-home {
+      font-family: 'Micro 5', monospace;
+      font-size: clamp(20px, 3vw, 40px);
+      color: black;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .nav-home:hover { opacity: 1; }
+
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-family: 'Micro 5', monospace;
+      font-size: clamp(24px, 3.5vw, 52px);
+      color: black;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 0.5; }
+
+    /* ── HEADER ── */
+    header {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0.5rem 2rem 2.5rem;
+    }
+
+    header h1 {
+      font-family: 'Micro 5', monospace;
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    /* ── FILTER TABS ── */
+    .filters {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 2rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      font-family: 'Micro 5', monospace;
+      font-size: clamp(18px, 2vw, 28px);
+      background: none;
+      border: 2px solid black;
+      padding: 0.2rem 0.9rem 0.1rem;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      color: black;
+      letter-spacing: 0.03em;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: black;
+      color: white;
+    }
+
+    /* ── MASONRY GRID ── */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      columns: 3 280px;
+      column-gap: 1.25rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      break-inside: avoid;
+      margin-bottom: 1.25rem;
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(0,0,0,0.10);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.45s forwards;
+    }
+
+    .card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+    }
+
+    .card.hidden { display: none; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* stagger */
+    .card:nth-child(1)  { animation-delay: 0.05s; }
+    .card:nth-child(2)  { animation-delay: 0.10s; }
+    .card:nth-child(3)  { animation-delay: 0.15s; }
+    .card:nth-child(4)  { animation-delay: 0.20s; }
+    .card:nth-child(5)  { animation-delay: 0.25s; }
+    .card:nth-child(6)  { animation-delay: 0.30s; }
+    .card:nth-child(7)  { animation-delay: 0.35s; }
+    .card:nth-child(8)  { animation-delay: 0.40s; }
+    .card:nth-child(9)  { animation-delay: 0.45s; }
+
+    .card-thumb {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      background: #E4F3F3;
+    }
+
+    /* placeholder coloured thumbs */
+    .card-thumb-placeholder {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .card-body {
+      padding: 0.85rem 1rem 1rem;
+    }
+
+    .card-category {
+      font-family: 'Micro 5', monospace;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .cat-research { color: #329EB9; }
+    .cat-art      { color: #EA85C2; }
+    .cat-code     { color: #7b5ea7; }
+
+    .card-title {
+      font-family: 'Micro 5', monospace;
+      font-size: clamp(18px, 2vw, 26px);
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-family: 'Metrophobic', sans-serif;
+      font-size: 12px;
+      border: 1px solid rgba(0,0,0,0.25);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      color: #444;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .tag:hover { border-color: black; color: black; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { gap: 1rem; }
+      header { padding: 0.5rem 1.25rem 2rem; }
+      .filters { padding: 0 1.25rem 1.5rem; }
+      main { padding: 0 1.25rem 3rem; columns: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="blob-canvas"></canvas>
+
+  <nav>
+    <a class="nav-home" href="marshall-washington.html">← Home</a>
+    <div class="nav-links">
+      <a href="#">CV</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>Portfolio</h1>
+  </header>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="research">Research</button>
+    <button class="filter-btn" data-filter="art">Art</button>
+    <button class="filter-btn" data-filter="code">Code</button>
+  </div>
+
+  <main id="grid">
+
+    <!-- RESEARCH -->
+    <div class="card" data-cat="research">
+      <div class="card-thumb-placeholder" style="height:160px; background: linear-gradient(135deg,#d0eef8,#b8e4f4);">🔬</div>
+      <div class="card-body">
+        <div class="card-category cat-research">Research</div>
+        <div class="card-title">Phonological Variation in Colorado Spanish</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Linguistics</a>
+          <a class="tag" href="#">Phonology</a>
+          <a class="tag" href="#">Paper ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="research">
+      <div class="card-thumb-placeholder" style="height:200px; background: linear-gradient(135deg,#c8e8f5,#a8d8ee);">📝</div>
+      <div class="card-body">
+        <div class="card-category cat-research">Research</div>
+        <div class="card-title">Mandarin Tone Acquisition in L2 Learners</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Chinese</a>
+          <a class="tag" href="#">L2 Acquisition</a>
+          <a class="tag" href="#">Slides ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="research">
+      <div class="card-thumb-placeholder" style="height:140px; background: linear-gradient(135deg,#daf0f8,#bce3f3);">🗂️</div>
+      <div class="card-body">
+        <div class="card-category cat-research">Research</div>
+        <div class="card-title">Corpus Analysis of Code-Switching Patterns</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Sociolinguistics</a>
+          <a class="tag" href="#">Corpus</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ART -->
+    <div class="card" data-cat="art">
+      <div class="card-thumb-placeholder" style="height:220px; background: linear-gradient(135deg,#fce4f0,#f8c8e4);">🎨</div>
+      <div class="card-body">
+        <div class="card-category cat-art">Art</div>
+        <div class="card-title">Glitch Portraits Series</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Digital</a>
+          <a class="tag" href="#">Glitch</a>
+          <a class="tag" href="#">Gallery ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="art">
+      <div class="card-thumb-placeholder" style="height:170px; background: linear-gradient(135deg,#fbd6eb,#f7bfe0);">✏️</div>
+      <div class="card-body">
+        <div class="card-category cat-art">Art</div>
+        <div class="card-title">Zine: Language is a Body</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Zine</a>
+          <a class="tag" href="#">Print</a>
+          <a class="tag" href="#">PDF ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="art">
+      <div class="card-thumb-placeholder" style="height:250px; background: linear-gradient(135deg,#fde8f3,#fbcfe8);">🌸</div>
+      <div class="card-body">
+        <div class="card-category cat-art">Art</div>
+        <div class="card-title">Generative Flora — p5.js Sketches</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Generative</a>
+          <a class="tag" href="#">p5.js</a>
+          <a class="tag" href="#">Demo ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE -->
+    <div class="card" data-cat="code">
+      <div class="card-thumb-placeholder" style="height:150px; background: linear-gradient(135deg,#e8dff5,#d8caf0);">💻</div>
+      <div class="card-body">
+        <div class="card-category cat-code">Code</div>
+        <div class="card-title">Tone Transcription CLI Tool</div>
+        <div class="card-tags">
+          <a class="tag" href="#">Python</a>
+          <a class="tag" href="#">NLP</a>
+          <a class="tag" href="#">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="code">
+      <div class="card-thumb-placeholder" style="height:190px; background: linear-gradient(135deg,#ddd5f0,#ccc0e8);">🔧</div>
+      <div class="card-body">
+        <div class="card-category cat-code">Code</div>
+        <div class="card-title">Interactive IPA Chart</div>
+        <div class="card-tags">
+          <a class="tag" href="#">JavaScript</a>
+          <a class="tag" href="#">Web Audio</a>
+          <a class="tag" href="#">Live ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-cat="code">
+      <div class="card-thumb-placeholder" style="height:165px; background: linear-gradient(135deg,#e4dcf5,#d4c8ee);">📊</div>
+      <div class="card-body">
+        <div class="card-category cat-code">Code</div>
+        <div class="card-title">Corpus Frequency Visualizer</div>
+        <div class="card-tags">
+          <a class="tag" href="#">D3.js</a>
+          <a class="tag" href="#">Data Viz</a>
+          <a class="tag" href="#">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ── FILTER ──
+    const btns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        cards.forEach(c => {
+          const show = f === 'all' || c.dataset.cat === f;
+          c.classList.toggle('hidden', !show);
+        });
+      });
+    });
+
+    // ── BLOBS ──
+    const canvas = document.getElementById('blob-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const COLORS = [
+      { r: 85,  g: 205, b: 252 },
+      { r: 85,  g: 205, b: 252 },
+      { r: 247, g: 168, b: 184 },
+      { r: 247, g: 168, b: 184 },
+      { r: 255, g: 255, b: 255 },
+    ];
+
+    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    const blobs = COLORS.map((color, i) => ({
+      color,
+      baseX: [0.15, 0.75, 0.85, 0.25, 0.5][i],
+      baseY: [0.25, 0.15, 0.7,  0.75, 0.5][i],
+      factorX: [ 0.45, -0.35,  0.28, -0.40,  0.20][i],
+      factorY: [ 0.40,  0.30, -0.38,  0.35, -0.25][i],
+      radius: [420, 380, 400, 360, 340][i],
+      x: 0, y: 0,
+    }));
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    blobs.forEach(b => { b.x = b.baseX * window.innerWidth; b.y = b.baseY * window.innerHeight; });
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function draw() {
+      const W = canvas.width, H = canvas.height;
+      const mx = mouse.x / W - 0.5;
+      const my = mouse.y / H - 0.5;
+      ctx.clearRect(0, 0, W, H);
+      blobs.forEach(b => {
+        const tx = b.baseX * W + mx * W * b.factorX * 2;
+        const ty = b.baseY * H + my * H * b.factorY * 2;
+        b.x = lerp(b.x, tx, 0.09);
+        b.y = lerp(b.y, ty, 0.09);
+        const { r, g } = b.color; const blue = b.color.b;
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+        grad.addColorStop(0,   `rgba(${r},${g},${blue},0.7)`);
+        grad.addColorStop(0.5, `rgba(${r},${g},${blue},0.35)`);
+        grad.addColorStop(1,   `rgba(${r},${g},${blue},0)`);
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+
+</body>
+</html>
