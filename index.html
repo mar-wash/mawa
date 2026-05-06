@@ -69,6 +69,7 @@
       font-weight: 400;
       line-height: 1;
       margin-bottom: 0.5rem;
+      text-shadow: 2px 3px 8px rgba(0,0,0,0.18);
     }
 
     .hero-text .subtitle {
@@ -103,12 +104,30 @@
       font-size: clamp(40px, 6vw, 64px);
       font-weight: 400;
       margin-bottom: 1.5rem;
+      text-shadow: 2px 3px 8px rgba(0,0,0,0.18);
     }
 
     .news-list {
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
+      max-height: calc(3 * 4.2rem);
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 1.25rem 1.5rem;
+      background: rgba(180, 180, 180, 0.22);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.18) transparent;
+    }
+
+    .news-list::-webkit-scrollbar { width: 6px; }
+    .news-list::-webkit-scrollbar-track { background: transparent; }
+    .news-list::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.18);
+      border-radius: 3px;
     }
 
     .news-item {
@@ -118,6 +137,7 @@
       align-items: start;
       font-size: clamp(14px, 1.5vw, 18px);
       line-height: 1.5;
+      min-height: 3.2rem;
     }
 
     .news-date {
@@ -187,6 +207,11 @@
     <div class="news-list">
 
       <div class="news-item">
+        <span class="news-date">May 2026</span>
+        <span class="news-text-pink">My first co-authored paper was accepted to NLP4DH!</span>
+      </div>
+
+      <div class="news-item">
         <span class="news-date">August 2025</span>
         <span class="news-text-blue">I was awarded the CU Boulder Graduate Access and Retention Fellowship!</span>
       </div>
@@ -210,33 +235,27 @@
     const canvas = document.getElementById('blob-canvas');
     const ctx = canvas.getContext('2d');
 
-    // Trans flag colors: light blue, pink, white
     const COLORS = [
-      { r: 85,  g: 205, b: 252 }, // #55CDFC light blue
-      { r: 85,  g: 205, b: 252 }, // second blue blob
-      { r: 247, g: 168, b: 184 }, // #F7A8B8 pink
-      { r: 247, g: 168, b: 184 }, // second pink blob
-      { r: 255, g: 255, b: 255 }, // white
+      { r: 85,  g: 205, b: 252 },
+      { r: 85,  g: 205, b: 252 },
+      { r: 247, g: 168, b: 184 },
+      { r: 247, g: 168, b: 184 },
+      { r: 255, g: 255, b: 255 },
     ];
 
     let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-
     window.addEventListener('mousemove', e => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     });
 
-    // Each blob has a base position + offset driven by mouse
     const blobs = COLORS.map((color, i) => ({
       color,
-      // spread base positions around the viewport
       baseX: [0.15, 0.75, 0.85, 0.25, 0.5][i],
       baseY: [0.25, 0.15, 0.7,  0.75, 0.5][i],
-      // how strongly each blob follows the mouse (negative = moves away)
       factorX: [ 0.45, -0.35,  0.28, -0.40,  0.20][i],
       factorY: [ 0.40,  0.30, -0.38,  0.35, -0.25][i],
       radius: [420, 380, 400, 360, 340][i],
-      // current interpolated position
       x: 0, y: 0,
     }));
 
@@ -249,7 +268,6 @@
 
     function lerp(a, b, t) { return a + (b - a) * t; }
 
-    // Init positions
     blobs.forEach(b => {
       b.x = b.baseX * window.innerWidth;
       b.y = b.baseY * window.innerHeight;
@@ -257,7 +275,6 @@
 
     function draw() {
       const W = canvas.width, H = canvas.height;
-      // Normalise mouse to [-0.5, 0.5]
       const mx = mouse.x / W - 0.5;
       const my = mouse.y / H - 0.5;
 
@@ -270,11 +287,10 @@
         b.x = lerp(b.x, targetX, 0.09);
         b.y = lerp(b.y, targetY, 0.09);
 
-        const { r, g, bl: blue = b.color.b } = { r: b.color.r, g: b.color.g, bl: b.color.b };
         const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
-        grad.addColorStop(0,   `rgba(${r},${g},${blue}, 0.7)`);
-        grad.addColorStop(0.5, `rgba(${r},${g},${blue}, 0.35)`);
-        grad.addColorStop(1,   `rgba(${r},${g},${blue}, 0)`);
+        grad.addColorStop(0,   `rgba(${b.color.r},${b.color.g},${b.color.b}, 0.7)`);
+        grad.addColorStop(0.5, `rgba(${b.color.r},${b.color.g},${b.color.b}, 0.35)`);
+        grad.addColorStop(1,   `rgba(${b.color.r},${b.color.g},${b.color.b}, 0)`);
 
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
@@ -286,6 +302,51 @@
     }
 
     draw();
+
+    /* ── SMOOTH SCROLL INERTIA ── */
+    const newsList = document.querySelector('.news-list');
+    let targetScroll = 0;
+    let currentScroll = 0;
+    let isScrolling = false;
+
+    function smoothScrollLoop() {
+      if (!isScrolling) return;
+      currentScroll += (targetScroll - currentScroll) * 0.08;
+      newsList.scrollTop = currentScroll;
+      if (Math.abs(targetScroll - currentScroll) > 0.1) {
+        requestAnimationFrame(smoothScrollLoop);
+      } else {
+        isScrolling = false;
+      }
+    }
+
+    newsList.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      targetScroll += e.deltaY;
+      const maxScroll = newsList.scrollHeight - newsList.clientHeight;
+      targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+      if (!isScrolling) {
+        isScrolling = true;
+        requestAnimationFrame(smoothScrollLoop);
+      }
+    }, { passive: false });
+
+    /* ── TOUCH SUPPORT ── */
+    let touchStartY = 0;
+    newsList.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    });
+    newsList.addEventListener('touchmove', (e) => {
+      const delta = touchStartY - e.touches[0].clientY;
+      targetScroll += delta * 1.2;
+      const maxScroll = newsList.scrollHeight - newsList.clientHeight;
+      targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+      touchStartY = e.touches[0].clientY;
+      if (!isScrolling) {
+        isScrolling = true;
+        requestAnimationFrame(smoothScrollLoop);
+      }
+    });
   </script>
 </body>
 </html>
