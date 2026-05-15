@@ -176,7 +176,7 @@
     .cat-research { color: #329EB9; }
     .cat-art      { color: #EA85C2; }
     .cat-code     { color: #7b5ea7; }
-    .cat-hybrid   { color: #58C4A3: }
+    .cat-hybrid   { color: #58C4A3; }
 
     .card-title {
       font-family: 'Micro 5', monospace;
@@ -238,7 +238,7 @@
 
   <main id="grid">
 
-   <div class="card" data-cat="hybrid">
+   <div class="card" data-cat="research art">
       <img class="card-thumb" src="IMG_1814.JPG" style="height:210px;"/>
       <div class="card-body">
         <div class="card-category cat-hybrid">Research × Art</div>
@@ -266,7 +266,7 @@
       </div>
     </div>
 
-    <div class="card" data-cat="Hybrid">
+    <div class="card" data-cat="research art">
      <img class="card-thumb" src="consent.jpg" style="height:210px;"/>
       <div class="card-body">
         <div class="card-category cat-art">Research × Art</div>
@@ -298,20 +298,39 @@
   <script>
     // ── FILTER ──
     const btns = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('.card');
+const cards = document.querySelectorAll('.card');
 
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        btns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const f = btn.dataset.filter;
-        cards.forEach(c => {
-          const show = f === 'all' || c.dataset.cat === f;
-          c.classList.toggle('hidden', !show);
-        });
-      });
+btns.forEach(btn => {
+
+  btn.addEventListener('click', () => {
+
+    btns.forEach(b =>
+      b.classList.remove('active')
+    );
+
+    btn.classList.add('active');
+
+    const filter = btn.dataset.filter;
+
+    cards.forEach(card => {
+
+      const categories =
+        card.dataset.cat.split(' ');
+
+      const show =
+        filter === 'all' ||
+        categories.includes(filter);
+
+      card.classList.toggle(
+        'hidden',
+        !show
+      );
+
     });
 
+  });
+
+});
     // ── BLOBS ──
     const canvas = document.getElementById('blob-canvas');
     const ctx = canvas.getContext('2d');
