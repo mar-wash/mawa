@@ -106,19 +106,21 @@
     }
     .link-blue:hover { background: rgba(50, 158, 185, 0.45); }
 
+    .hero-aside {
+      flex: 0 0 clamp(200px, 35%, 400px);
+      min-width: 0;
+    }
+
     .hero-accent {
-      max-width: clamp(200px, 35%, 400px);
+      width: 100%;
       height: auto;
-      flex-shrink: 0;
       border-radius: 2px;
       object-fit: cover;
     }
 
     /* ── NEWS ── */
     .news-section {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 2rem 4rem;
+      margin-top: 1.5rem;
     }
 
     .news-section h2 {
@@ -189,12 +191,14 @@
 
       .hero-accent {
         width: 100%;
-        max-width: 400px;
-        align-self: center;
         margin-top: 0.15rem;
       }
 
-      .news-section { padding: 0 1.25rem 3rem; }
+      .hero-aside {
+        width: 100%;
+        max-width: 400px;
+        align-self: center;
+      }
 
       .news-item {
         grid-template-columns: 1fr;
@@ -225,33 +229,33 @@
         <p>Outside of research, you can find me baking bread or watching reality TV :p</p>
       </div>
     </div>
-    <img class="hero-accent" src="IMG_6187_2.jpg" alt="Marshall Washington" />
-  </section>
+    <div class="hero-aside">
+      <img class="hero-accent" src="IMG_6187_2.jpg" alt="Marshall Washington" />
+      <section class="news-section">
+        <h2>News</h2>
+        <div class="news-list">
+          <div class="news-item">
+            <span class="news-date">May 2026</span>
+            <span class="news-text-pink">My first co-authored paper was accepted to NLP4DH!</span>
+          </div>
 
-  <section class="news-section">
-    <h2>News</h2>
-    <div class="news-list">
+          <div class="news-item">
+            <span class="news-date">August 2025</span>
+            <span class="news-text-blue">I was awarded the CU Boulder Graduate Access and Retention Fellowship!</span>
+          </div>
 
-      <div class="news-item">
-        <span class="news-date">May 2026</span>
-        <span class="news-text-pink">My first co-authored paper was accepted to NLP4DH!</span>
-      </div>
+          <div class="news-item">
+            <span class="news-date">May 2025</span>
+            <span class="news-text-pink">I graduated with dual degrees in Linguistics and Chinese from the University of Oklahoma!</span>
+          </div>
 
-      <div class="news-item">
-        <span class="news-date">August 2025</span>
-        <span class="news-text-blue">I was awarded the CU Boulder Graduate Access and Retention Fellowship!</span>
-      </div>
+          <div class="news-item">
+            <span class="news-date">April 2025</span>
+            <span class="news-text-blue">I was admitted to the Linguistics M.A. at CU Boulder!</span>
+          </div>
 
-      <div class="news-item">
-        <span class="news-date">May 2025</span>
-        <span class="news-text-pink">I graduated with dual degrees in Linguistics and Chinese from the University of Oklahoma!</span>
-      </div>
-
-      <div class="news-item">
-        <span class="news-date">April 2025</span>
-        <span class="news-text-blue">I was admitted to the Linguistics M.A. at CU Boulder!</span>
-      </div>
-
+        </div>
+      </section>
     </div>
   </section>
 
