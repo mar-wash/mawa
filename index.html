@@ -78,6 +78,44 @@
       color: black;
     }
 
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: -0.7rem 0 1.5rem;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      color: black;
+      border-radius: 50%;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .social-links a:hover,
+    .social-links a:focus-visible {
+      background: rgba(50, 158, 185, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .social-links svg {
+      width: 1.45rem;
+      height: 1.45rem;
+      fill: currentColor;
+    }
+
+    .social-links .orcid-icon {
+      fill: #A6CE39;
+    }
+
+    .hero-aside .social-links {
+      margin: 0.75rem 0 1.5rem;
+    }
+
     .bio {
       font-size: clamp(13px, 1.1vw, 16px);
       line-height: 1.7;
@@ -239,6 +277,17 @@
     </div>
     <div class="hero-aside">
       <img class="hero-accent" src="IMG_6187_2.jpg" alt="Marshall Washington" />
+      <div class="social-links" aria-label="Contact and social links">
+        <a href="https://github.com/mar-wash" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.63 5.47 7.71.4.08.55-.18.55-.4 0-.2-.01-.86-.01-1.56-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.24 1.88.89 2.34.68.07-.53.28-.89.51-1.1-1.78-.2-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.2-.36-1.04.08-2.17 0 0 .67-.22 2.2.83A7.5 7.5 0 0 1 8 4.85c.68 0 1.36.09 2 .27 1.53-1.05 2.2-.83 2.2-.83.44 1.13.16 1.97.08 2.17.51.57.82 1.29.82 2.19 0 3.13-1.87 3.83-3.65 4.03.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .22.15.48.55.4A8.03 8.03 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></svg>
+        </a>
+        <a href="mailto:marshall.washington@outlook.com" aria-label="Email Marshall Washington">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
+        </a>
+        <a href="https://orcid.org/0009-0005-3800-1353" target="_blank" rel="noopener noreferrer" aria-label="ORCID profile">
+          <svg class="orcid-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-4 5.25a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM9.2 16H6.8v-5h2.4v5Zm3.15 0h-1.9v-5h1.9c2.2 0 3.55.98 3.55 2.5S14.55 16 12.35 16Zm.02-3.35h-.12v1.7h.12c.68 0 1.1-.3 1.1-.85s-.42-.85-1.1-.85Z"/></svg>
+        </a>
+      </div>
       <section class="news-section">
         <h2>News</h2>
         <div class="news-list">
